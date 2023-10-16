@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id      Int      @id @default(autoincrement())
+  nombre  String
+  email   String   @unique
+  compras Compra[]
+  opiniones OpinionCliente[]
+  carritoItems Carrito[]
+}
+
+model Compra {
+  id               Int         @id @default(autoincrement())
+  fechaCompra      DateTime
+  usuario          Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId        Int
+  historialesCompra HistorialCompra[]
+}
+
+model HistorialCompra {
+  id          Int      @id @default(autoincrement())
+  cantidad    Int
+  producto    String
+  compra      Compra   @relation(fields: [compraId], references: [id])
+  compraId    Int
+}
+model Factura {
+  id        Int       @id @default(autoincrement())
+  numero    String    @unique
+  fecha     DateTime
+  total     Float
+  pagos     Pago[]
+}
+
+model Pago {
+  id        Int       @id @default(autoincrement())
+  fecha     DateTime
+  monto     Float
+  factura   Factura   @relation(fields: [facturaId], references: [id])
+  facturaId Int
+  metodoDePago MetodoDePago @relation(fields: [metodoDePagoId], references: [id])
+  metodoDePagoId Int
+}
+model MetodoDePago {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  pagos     Pago[]
+}
+
+model Producto {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  precio      Float
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+  proveedor   Proveedor @relation(fields: [proveedorId], references: [id])
+  proveedorId Int
+  envios     Envio[] 
+  opinionesClientes OpinionCliente[]
+  carritoItems Carrito[]
+}
+
+
+model Categoria {
+  id       Int      @id @default(autoincrement())
+  nombre   String
+  productos Producto[]
+}
+
+model Proveedor {
+  id       Int      @id @default(autoincrement())
+  nombre   String
+  productos Producto[]
+}
+model Envio {
+  id         Int      @id @default(autoincrement())
+  direccion  String
+  ciudad     String
+  estado     String
+  codigoPostal String
+  producto   Producto @relation(fields: [productoId], references: [id])
+  productoId Int
+}
+model OpinionCliente {
+  id         Int      @id @default(autoincrement())
+  calificacion Int
+  comentario  String?
+  producto    Producto @relation(fields: [productoId], references: [id])
+  productoId  Int
+  usuario     Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int
+}
+model Carrito {
+  id          Int      @id @default(autoincrement())
+  cantidad    Int
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int
+  producto    Producto @relation(fields: [productoId], references: [id])
+  productoId  Int
+}
+
