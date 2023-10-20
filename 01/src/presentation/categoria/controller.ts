@@ -5,6 +5,7 @@ import { UpdateCategoriaDto } from '../../domain/dtos/categoria/update-categoria
 const prisma = new PrismaClient();
 
 
+
 export class CategoriasController {
     public createCategoria = async (req: Request, res: Response) => {
       const [error, createCategoriaDto] = CreateCategoriaDto.create(req.body);
