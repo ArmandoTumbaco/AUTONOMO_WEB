@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export class UpdateCarritoItemDto {
     constructor(public cantidad: number) {}
   
@@ -9,6 +11,12 @@ export class UpdateCarritoItemDto {
       }
   
       return new UpdateCarritoItemDto(cantidad);
+    }
+  
+    toPrismaUpdateInput(): Prisma.CarritoUpdateInput {
+      return {
+        cantidad: this.cantidad,
+      };
     }
   }
   

@@ -1,5 +1,5 @@
 export class CreateCarritoItemDto {
-    private constructor(
+    constructor(
       public readonly usuarioId: number,
       public readonly productoId: number,
       public readonly cantidad: number

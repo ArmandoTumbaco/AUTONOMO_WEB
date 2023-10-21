@@ -8,10 +8,11 @@ export class CarritoRoutes {
     
 
     router.get('/', carritoController.getCarrito);
-    router.get('/:id', carritoController.getCarritoById);
-    router.post('/', carritoController.addProductoToCarrito);
+    router.get('/:id', carritoController.getCarritoItemById);
+    router.post('/', carritoController.createCarritoItem);
     router.put('/:id', carritoController.updateCarritoItem);
     router.delete('/:id', carritoController.removeCarritoItem);
+
     
     return router;
   }
