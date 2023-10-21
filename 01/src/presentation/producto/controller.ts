@@ -6,7 +6,30 @@ import { CreateProductoDto } from '../../domain/dtos/producto/create-producto.dt
 
 const prisma = new PrismaClient();
 
+
 export class ProductosController {
+    constructor() {}
+
+  public getProductos = async (req: Request, res: Response) => {
+    const productos = await prisma.producto.findMany();
+    return res.json(productos);
+  };
+
+  public getProductoById = async (req: Request, res: Response) => {
+    const id = +req.params.id;
+    if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' });
+
+    const producto = await prisma.producto.findFirst({
+      where: { id },
+    });
+
+    if (producto) {
+      res.json(producto);
+    } else {
+      res.status(404).json({ error: `Producto with id ${id} not found` });
+    }
+  };
+  
     public createProducto = async (req: Request, res: Response) => {
       const [error, createProductoDto] = CreateProductoDto.create(req.body);
       if (error) return res.status(400).json({ error });
