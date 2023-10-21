@@ -4,6 +4,7 @@ export class CreateEnvioDto {
       public readonly ciudad: string,
       public readonly estado: string,
       public readonly codigoPostal: string,
+      public readonly productoId: number
     ) {}
   
     static create(props: {
@@ -11,14 +12,15 @@ export class CreateEnvioDto {
       ciudad: string;
       estado: string;
       codigoPostal: string;
+      productoId: number; 
     }): [string?, CreateEnvioDto?] {
-      const { direccion, ciudad, estado, codigoPostal } = props;
+      const { direccion, ciudad, estado, codigoPostal, productoId } = props;
   
-      if (!direccion || !ciudad || !estado || !codigoPostal) {
+      if (!direccion || !ciudad || !estado || !codigoPostal || isNaN(productoId)) {
         return ['All fields are required', undefined];
       }
   
-      return [undefined, new CreateEnvioDto(direccion, ciudad, estado, codigoPostal)];
+      return [undefined, new CreateEnvioDto(direccion, ciudad, estado, codigoPostal, productoId)];
     }
   }
   

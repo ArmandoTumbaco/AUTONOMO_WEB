@@ -1,74 +1,92 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { CreateCarritoItemDto } from '../../domain/dtos/carito/create-carito.dto';
 import { UpdateCarritoItemDto } from '../../domain/dtos/carito/update-carito.dto';
 
 const prisma = new PrismaClient();
+
 export class CarritoController {
   constructor() {}
 
-  public getCarrito = async (req: Request, res: Response) => {
 
+  public getCarrito = async (req: Request, res: Response) => {
+    
     const carritos = await prisma.carrito.findMany();
-        return res.json(carritos);
+    return res.json(carritos);
   };
 
+ 
   public getCarritoById = async (req: Request, res: Response) => {
     const id = +req.params.id;
+
     if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' });
 
     const carrito = await prisma.carrito.findFirst({
       where: { id },
     });
 
-    if (carrito) {
-      res.json(carrito);
-    } else {
-      res.status(404).json({ error: `Carrito with id ${id} not found` });
-    }
+    return carrito
+      ? res.json(carrito)
+      : res.status(404).json({ error: `Carrito with id ${id} not found` });
   };
-  
+
+ 
   public addProductoToCarrito = async (req: Request, res: Response) => {
-    const usuarioId = +req.params.usuarioId;
-    const [error, createCarritoItemDto] = CreateCarritoItemDto.create({
+    const usuarioId = +req.params.usuarioId; 
+    const createCarritoItemDto = CreateCarritoItemDto.create({
       usuarioId,
       productoId: req.body.productoId,
       cantidad: req.body.cantidad,
     });
 
-    if (error) return res.status(400).json({ error });
+    if (typeof createCarritoItemDto === 'string') {
+      return res.status(400).json({ error: createCarritoItemDto });
+    }
 
     const carritoItem = await prisma.carrito.create({
-      data: createCarritoItemDto!,
+      data: createCarritoItemDto,
       include: { producto: true },
     });
 
     return res.json(carritoItem);
   };
 
+ 
   public updateCarritoItem = async (req: Request, res: Response) => {
     const id = +req.params.id;
     const updateCarritoItemDto = UpdateCarritoItemDto.create(req.body);
   
-    if (!updateCarritoItemDto) {
-      return res.status(400).json({ error: 'Invalid input data' });
+    if (typeof updateCarritoItemDto === 'string') {
+      return res.status(400).json({ error: updateCarritoItemDto });
     }
   
-    const carritoItem = await prisma.carrito.findFirst({
-      where: { id },
-    });
+    if (updateCarritoItemDto) {
+      const carritoItem = await prisma.carrito.findFirst({
+        where: { id },
+      });
   
-    if (!carritoItem) return res.status(404).json({ error: `Carrito item with id ${id} not found` });
+      if (!carritoItem) return res.status(404).json({ error: `Carrito item with id ${id} not found` });
   
-    const updatedCarritoItem = await prisma.carrito.update({
-      where: { id },
-      data: updateCarritoItemDto, // Aquí se usa directamente el objeto
-      include: { producto: true },
-    });
+      
+      const carritoUpdateInput: Prisma.CarritoUpdateInput = {
+        cantidad: updateCarritoItemDto.cantidad,
+        
+      };
   
-    res.json(updatedCarritoItem);
+      const updatedCarritoItem = await prisma.carrito.update({
+        where: { id },
+        data: carritoUpdateInput, 
+        include: { producto: true },
+      });
+  
+      res.json(updatedCarritoItem);
+    } else {
+      return res.status(400).json({ error: 'Invalid input data' });
+    }
   };
   
+  
+
 
   public removeCarritoItem = async (req: Request, res: Response) => {
     const id = +req.params.id;
@@ -78,6 +96,7 @@ export class CarritoController {
     });
 
     if (!carritoItem) return res.status(404).json({ error: `Carrito item with id ${id} not found` });
+
 
     const deleted = await prisma.carrito.delete({
       where: { id },

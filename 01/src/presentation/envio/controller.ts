@@ -34,7 +34,7 @@ export class EnvioController {
       return res.status(400).json({ error: createEnvioDto[0] });
     }
   
-    const { direccion, ciudad, estado, codigoPostal } = createEnvioDto[1]!;
+    const { direccion, ciudad, estado, codigoPostal, productoId  } = createEnvioDto[1]!;
     
     try {
       const envio = await prisma.envio.create({
@@ -43,6 +43,7 @@ export class EnvioController {
           ciudad,
           estado,
           codigoPostal,
+          producto: { connect: { id: productoId } },
         } as Prisma.EnvioCreateInput,
       });
     
