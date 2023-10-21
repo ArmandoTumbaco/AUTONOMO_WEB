@@ -6,6 +6,8 @@ export class ProveedoresRoutes {
     const router = Router();
     const proveedoresController = new ProveedoresController();
 
+    router.get('/', proveedoresController.getProveedores);
+    router.get('/:id', proveedoresController.getProveedorById);
     router.post('/', proveedoresController.createProveedor);
     router.put('/:id', proveedoresController.updateProveedor);
     router.delete('/:id', proveedoresController.deleteProveedor);

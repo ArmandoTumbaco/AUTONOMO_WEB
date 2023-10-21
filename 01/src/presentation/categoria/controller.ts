@@ -7,6 +7,28 @@ const prisma = new PrismaClient();
 
 
 export class CategoriasController {
+    constructor() {}
+
+  public getCategorias = async (req: Request, res: Response) => {
+    const categorias = await prisma.categoria.findMany();
+    return res.json(categorias);
+  };
+
+    public getCategoriaById = async (req: Request, res: Response) => {
+        const id = +req.params.id;
+        if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' });
+  
+        const categoria = await prisma.categoria.findUnique({
+          where: { id },
+        });
+  
+        if (categoria) {
+          res.json(categoria);
+        } else {
+          res.status(404).json({ error: `Categoría with id ${id} not found` });
+        }
+      };
+
     public createCategoria = async (req: Request, res: Response) => {
       const [error, createCategoriaDto] = CreateCategoriaDto.create(req.body);
       if (error) return res.status(400).json({ error });
