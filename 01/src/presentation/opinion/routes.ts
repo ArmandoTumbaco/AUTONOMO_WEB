@@ -6,7 +6,8 @@ export class OpinionClienteRoutes {
     const router = Router();
     const opinionClienteController = new OpinionClienteController();
     
-    // Rutas para la entidad OpinionCliente
+    
+    router.get('/', opinionClienteController.getOpinionCliente);
     router.post('/', opinionClienteController.createOpinionCliente);
     router.get('/:id', opinionClienteController.getOpinionClienteById);
     router.put('/:id', opinionClienteController.updateOpinionCliente);

@@ -7,6 +7,11 @@ const prisma = new PrismaClient();
 export class OpinionClienteController {
   constructor() {}
 
+  public getOpinionCliente = async( req: Request, res: Response ) => {
+    const opinionClientes = await prisma.opinionCliente.findMany();
+    return res.json( opinionClientes);
+  };
+
   public createOpinionCliente = async (req: Request, res: Response) => {
     const createOpinionClienteDto = CreateOpinionClienteDto.create(req.body);
 

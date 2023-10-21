@@ -7,8 +7,9 @@ export class CarritoRoutes {
     const carritoController = new CarritoController();
     
 
-    router.get('/:usuarioId', carritoController.getCarritoItems);
-    router.post('/:usuarioId', carritoController.addProductoToCarrito);
+    router.get('/', carritoController.getCarrito);
+    router.get('/:id', carritoController.getCarritoById);
+    router.post('/', carritoController.addProductoToCarrito);
     router.put('/:id', carritoController.updateCarritoItem);
     router.delete('/:id', carritoController.removeCarritoItem);
     

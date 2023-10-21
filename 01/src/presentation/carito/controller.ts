@@ -7,19 +7,27 @@ const prisma = new PrismaClient();
 export class CarritoController {
   constructor() {}
 
-  public getCarritoItems = async (req: Request, res: Response) => {
-    const usuarioId = +req.params.usuarioId;
+  public getCarrito = async (req: Request, res: Response) => {
 
-    if (isNaN(usuarioId)) return res.status(400).json({ error: 'Invalid usuarioId' });
-
-    const carritoItems = await prisma.carrito.findMany({
-      where: { usuarioId },
-      include: { producto: true },
-    });
-
-    return res.json(carritoItems);
+    const carritos = await prisma.carrito.findMany();
+        return res.json(carritos);
   };
 
+  public getCarritoById = async (req: Request, res: Response) => {
+    const id = +req.params.id;
+    if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' });
+
+    const carrito = await prisma.carrito.findFirst({
+      where: { id },
+    });
+
+    if (carrito) {
+      res.json(carrito);
+    } else {
+      res.status(404).json({ error: `Carrito with id ${id} not found` });
+    }
+  };
+  
   public addProductoToCarrito = async (req: Request, res: Response) => {
     const usuarioId = +req.params.usuarioId;
     const [error, createCarritoItemDto] = CreateCarritoItemDto.create({
